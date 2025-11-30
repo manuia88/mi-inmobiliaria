@@ -1,0 +1,97 @@
+import Link from 'next/link'
+import Image from 'next/image'
+import { Bed, Bath, Maximize, Car, MapPin } from 'lucide-react'
+import { Property } from '@/data/properties'
+
+interface PropertyCardProps {
+  property: Property
+}
+
+export default function PropertyCard({ property }: PropertyCardProps) {
+  const formatPrice = (price: number, currency: string) => {
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+    }).format(price)
+  }
+
+  return (
+    <Link href={`/propiedades/${property.id}`}>
+      <div className="card overflow-hidden group cursor-pointer">
+        {/* Imagen */}
+        <div className="relative h-64 overflow-hidden">
+          <Image
+            src={property.images[0]}
+            alt={property.title}
+            fill
+            className="object-cover group-hover:scale-110 transition-transform duration-300"
+          />
+          {/* Badges */}
+          <div className="absolute top-4 left-4 flex gap-2">
+            <span className="bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+              {property.transaction}
+            </span>
+            {property.featured && (
+              <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                Destacado
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Contenido */}
+        <div className="p-5">
+          {/* Precio */}
+          <div className="text-2xl font-bold text-primary-600 mb-2">
+            {formatPrice(property.price, property.currency)}
+            {property.transaction === 'Renta' && (
+              <span className="text-sm text-gray-500 font-normal">/mes</span>
+            )}
+          </div>
+
+          {/* Título */}
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+            {property.title}
+          </h3>
+
+          {/* Ubicación */}
+          <div className="flex items-center text-gray-600 mb-4">
+            <MapPin className="h-4 w-4 mr-1" />
+            <span className="text-sm">
+              {property.location.city}, {property.location.state}
+            </span>
+          </div>
+
+          {/* Características */}
+          <div className="grid grid-cols-4 gap-2 pt-4 border-t border-gray-200">
+            {property.features.bedrooms > 0 && (
+              <div className="flex items-center text-gray-700">
+                <Bed className="h-4 w-4 mr-1" />
+                <span className="text-sm">{property.features.bedrooms}</span>
+              </div>
+            )}
+            {property.features.bathrooms > 0 && (
+              <div className="flex items-center text-gray-700">
+                <Bath className="h-4 w-4 mr-1" />
+                <span className="text-sm">{property.features.bathrooms}</span>
+              </div>
+            )}
+            {property.features.constructionArea > 0 && (
+              <div className="flex items-center text-gray-700">
+                <Maximize className="h-4 w-4 mr-1" />
+                <span className="text-sm">{property.features.constructionArea}m²</span>
+              </div>
+            )}
+            {property.features.parking > 0 && (
+              <div className="flex items-center text-gray-700">
+                <Car className="h-4 w-4 mr-1" />
+                <span className="text-sm">{property.features.parking}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
+}
