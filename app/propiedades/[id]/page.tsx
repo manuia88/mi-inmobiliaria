@@ -1,16 +1,35 @@
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { properties } from '@/data/properties'
-import { Bed, Bath, Maximize, Car, MapPin, Calendar, Home as HomeIcon, Phone, Mail, MessageSquare } from 'lucide-react'
+import { Property } from '@/types/property'
+import { Bed, Bath, Maximize, Car, MapPin } from 'lucide-react'
 import PropertyCard from '@/components/PropertyCard'
+import PropertyContactForm from '@/components/PropertyContactForm'
 
-export async function generateStaticParams() {
-  return properties.map((property) => ({
-    id: property.id,
-  }))
+async function getAllProperties(): Promise<Property[]> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL 
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+      : process.env.NODE_ENV === 'production'
+      ? 'https://mi-inmobiliaria.vercel.app'
+      : 'http://localhost:3000'
+    
+    const response = await fetch(`${baseUrl}/api/properties`, {
+      next: { revalidate: 3600 },
+    })
+
+    if (!response.ok) {
+      return []
+    }
+
+    const data = await response.json()
+    return data.properties || []
+  } catch (error) {
+    return []
+  }
 }
 
-export default function PropertyDetailPage({ params }: { params: { id: string } }) {
+export default async function PropertyDetailPage({ params }: { params: { id: string } }) {
+  const properties = await getAllProperties()
   const property = properties.find(p => p.id === params.id)
 
   if (!property) {
@@ -191,55 +210,10 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
 
           {/* Columna Derecha - Formulario de Contacto */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-md p-6 sticky top-24">
-              <h3 className="text-xl font-semibold mb-6">Contacta al Agente</h3>
-
-              <form className="space-y-4">
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Nombre completo"
-                    className="input-field"
-                  />
-                </div>
-                <div>
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    className="input-field"
-                  />
-                </div>
-                <div>
-                  <input
-                    type="tel"
-                    placeholder="Teléfono"
-                    className="input-field"
-                  />
-                </div>
-                <div>
-                  <textarea
-                    rows={4}
-                    placeholder="Mensaje (opcional)"
-                    className="input-field resize-none"
-                    defaultValue={`Hola, estoy interesado en ${property.title}`}
-                  />
-                </div>
-                <button type="submit" className="btn-primary w-full">
-                  Enviar Mensaje
-                </button>
-              </form>
-
-              <div className="mt-6 pt-6 border-t space-y-3">
-                <button className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-all">
-                  <Phone className="h-5 w-5" />
-                  Llamar Ahora
-                </button>
-                <button className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 rounded-lg transition-all">
-                  <MessageSquare className="h-5 w-5" />
-                  WhatsApp
-                </button>
-              </div>
-            </div>
+            <PropertyContactForm 
+              propertyId={property.id} 
+              propertyTitle={property.title} 
+            />
           </div>
         </div>
 

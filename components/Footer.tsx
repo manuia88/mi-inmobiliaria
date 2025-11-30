@@ -8,9 +8,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Columna 1: Sobre Nosotros */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Mi Inmobiliaria</h3>
+            <h3 className="text-xl font-bold mb-4">Livoo Bienes Raíces</h3>
             <p className="text-gray-400 mb-4">
-              Tu aliado en la búsqueda del hogar perfecto. Más de 10 años de experiencia en el mercado inmobiliario.
+              El escenario fértil donde tus sueños echan raíces. Más de 10 años de experiencia en el mercado inmobiliario.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition">
@@ -49,6 +49,11 @@ export default function Footer() {
                   Sobre Nosotros
                 </Link>
               </li>
+              <li>
+                <Link href="/aviso-de-privacidad" className="text-gray-400 hover:text-white transition">
+                  Aviso de Privacidad
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -76,18 +81,25 @@ export default function Footer() {
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-primary-400 flex-shrink-0" />
-                <span className="text-gray-400">+52 33 1234 5678</span>
+                <a href="tel:+525540646386" className="text-gray-400 hover:text-white transition">+52 55 4064 6386</a>
               </li>
               <li className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-primary-400 flex-shrink-0" />
-                <span className="text-gray-400">contacto@miinmobiliaria.com</span>
+                <a href="mailto:manuel@livoo.io" className="text-gray-400 hover:text-white transition">manuel@livoo.io</a>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} Mi Inmobiliaria. Todos los derechos reservados.</p>
+        <div className="border-t border-gray-800 mt-8 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm space-y-2 md:space-y-0">
+            <p>&copy; {new Date().getFullYear()} Livoo Bienes Raíces. Todos los derechos reservados.</p>
+            <div className="flex space-x-4">
+              <Link href="/aviso-de-privacidad" className="hover:text-white transition">
+                Aviso de Privacidad
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

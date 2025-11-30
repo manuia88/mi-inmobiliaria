@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { Menu, X, Home, Building2, Phone } from 'lucide-react'
 
@@ -20,10 +21,16 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <Building2 className="h-8 w-8 text-primary-600" />
-            <span className="text-xl font-bold text-gray-900">
-              Mi Inmobiliaria
-            </span>
+            <Image 
+              src="/livoo_sin_fondo.png" 
+              alt="Livoo Bienes Raíces" 
+              width={140} 
+              height={50}
+              className="h-10 md:h-12 w-auto object-contain"
+              priority
+              unoptimized={false}
+            />
+            <span className="text-sm font-semibold text-gray-700 hidden sm:inline">BIENES RAÍCES</span>
           </Link>
 
           {/* Desktop Navigation */}

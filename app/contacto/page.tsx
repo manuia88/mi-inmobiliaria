@@ -1,15 +1,98 @@
 'use client'
 
 import { useState } from 'react'
-import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Linkedin, CheckCircle } from 'lucide-react'
+import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Linkedin, CheckCircle, Loader2 } from 'lucide-react'
+import { sendContactEmail } from '@/lib/emailService'
+import { insertContactLead } from '@/lib/supabase'
+import ReCAPTCHAComponent from '@/components/ReCAPTCHA'
 
 export default function ContactoPage() {
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleRecaptchaChange = (token: string | null) => {
+    setRecaptchaToken(token)
+  }
+
+  const handleRecaptchaExpired = () => {
+    setRecaptchaToken(null)
+  }
+
+  const handleRecaptchaError = () => {
+    setRecaptchaToken(null)
+    setError('Error al verificar reCAPTCHA. Por favor, intenta de nuevo.')
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 3000)
+    setLoading(true)
+    setError(null)
+
+    // Verificar reCAPTCHA primero
+    if (!recaptchaToken) {
+      setError('Por favor, completa la verificación reCAPTCHA.')
+      setLoading(false)
+      return
+    }
+
+    // Validar reCAPTCHA en el servidor
+    try {
+      const recaptchaResponse = await fetch('/api/recaptcha', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: recaptchaToken }),
+      })
+
+      const recaptchaData = await recaptchaResponse.json()
+
+      if (!recaptchaData.success) {
+        setError(recaptchaData.error || 'Verificación de reCAPTCHA fallida. Por favor, intenta de nuevo.')
+        setRecaptchaToken(null)
+        setLoading(false)
+        return
+      }
+    } catch (err) {
+      console.error('Error al verificar reCAPTCHA:', err)
+      setError('Error al verificar reCAPTCHA. Por favor, intenta de nuevo.')
+      setRecaptchaToken(null)
+      setLoading(false)
+      return
+    }
+
+    const formData = new FormData(e.currentTarget)
+    const formValues = {
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      phone: formData.get('phone') as string,
+      subject: formData.get('subject') as string,
+      message: formData.get('message') as string,
+    }
+
+    try {
+      // Enviar email con EmailJS
+      const emailResult = await sendContactEmail(formValues)
+
+      // Guardar en Supabase (si está configurado)
+      await insertContactLead(formValues)
+
+      if (emailResult.success) {
+        setSubmitted(true)
+        setRecaptchaToken(null)
+        e.currentTarget.reset()
+        setTimeout(() => setSubmitted(false), 5000)
+      } else {
+        setError(emailResult.message)
+      }
+    } catch (err) {
+      console.error('Error al enviar formulario:', err)
+      setError('Error al enviar el mensaje. Por favor, intenta de nuevo.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -59,8 +142,8 @@ export default function ContactoPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-1">Teléfono</h3>
-                  <a href="tel:+523312345678" className="text-primary-600 hover:underline">
-                    +52 33 1234 5678
+                  <a href="tel:+525540646386" className="text-primary-600 hover:underline">
+                    +52 55 4064 6386
                   </a>
                   <p className="text-gray-600 text-sm mt-1">
                     Lun - Vie: 9:00 AM - 7:00 PM<br />
@@ -78,8 +161,8 @@ export default function ContactoPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-1">Email</h3>
-                  <a href="mailto:contacto@miinmobiliaria.com" className="text-primary-600 hover:underline">
-                    contacto@miinmobiliaria.com
+                  <a href="mailto:manuel@livoo.io" className="text-primary-600 hover:underline">
+                    manuel@livoo.io
                   </a>
                   <p className="text-gray-600 text-sm mt-1">
                     Respuesta en menos de 24 horas
@@ -155,6 +238,12 @@ export default function ContactoPage() {
                 </div>
               )}
 
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-800">{error}</p>
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -162,9 +251,11 @@ export default function ContactoPage() {
                   </label>
                   <input
                     type="text"
+                    name="name"
                     required
                     className="input-field"
                     placeholder="Juan Pérez"
+                    disabled={loading}
                   />
                 </div>
 
@@ -174,9 +265,11 @@ export default function ContactoPage() {
                   </label>
                   <input
                     type="email"
+                    name="email"
                     required
                     className="input-field"
                     placeholder="juan@ejemplo.com"
+                    disabled={loading}
                   />
                 </div>
 
@@ -186,9 +279,11 @@ export default function ContactoPage() {
                   </label>
                   <input
                     type="tel"
+                    name="phone"
                     required
                     className="input-field"
-                    placeholder="+52 33 1234 5678"
+                    placeholder="+52 55 4064 6386"
+                    disabled={loading}
                   />
                 </div>
 
@@ -196,14 +291,14 @@ export default function ContactoPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Asunto *
                   </label>
-                  <select required className="input-field">
+                  <select name="subject" required className="input-field" disabled={loading}>
                     <option value="">Selecciona un asunto</option>
-                    <option>Quiero comprar</option>
-                    <option>Quiero vender</option>
-                    <option>Quiero rentar</option>
-                    <option>Información general</option>
-                    <option>Soporte</option>
-                    <option>Otro</option>
+                    <option value="Quiero comprar">Quiero comprar</option>
+                    <option value="Quiero vender">Quiero vender</option>
+                    <option value="Quiero rentar">Quiero rentar</option>
+                    <option value="Información general">Información general</option>
+                    <option value="Soporte">Soporte</option>
+                    <option value="Otro">Otro</option>
                   </select>
                 </div>
 
@@ -212,10 +307,12 @@ export default function ContactoPage() {
                     Mensaje *
                   </label>
                   <textarea
+                    name="message"
                     required
                     rows={5}
                     className="input-field resize-none"
                     placeholder="Escribe tu mensaje aquí..."
+                    disabled={loading}
                   />
                 </div>
 
@@ -225,15 +322,43 @@ export default function ContactoPage() {
                       type="checkbox"
                       required
                       className="mt-1 mr-2"
+                      disabled={loading}
                     />
                     <span className="text-sm text-gray-600">
-                      Acepto la política de privacidad y el tratamiento de mis datos *
+                      Acepto el{' '}
+                      <a 
+                        href="/aviso-de-privacidad" 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary-600 hover:underline"
+                      >
+                        Aviso de Privacidad
+                      </a>
+                      {' '}y el tratamiento de mis datos *
                     </span>
                   </label>
                 </div>
 
-                <button type="submit" className="btn-primary w-full">
-                  Enviar Mensaje
+                {/* reCAPTCHA */}
+                <ReCAPTCHAComponent
+                  onChange={handleRecaptchaChange}
+                  onExpired={handleRecaptchaExpired}
+                  onError={handleRecaptchaError}
+                />
+
+                <button 
+                  type="submit" 
+                  className="btn-primary w-full flex items-center justify-center"
+                  disabled={loading || !recaptchaToken}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    'Enviar Mensaje'
+                  )}
                 </button>
               </form>
             </div>

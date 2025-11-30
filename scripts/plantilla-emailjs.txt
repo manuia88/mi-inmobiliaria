@@ -1,0 +1,58 @@
+========================================
+PLANTILLA DE EMAIL PARA EMAILJS
+========================================
+
+Copia y pega esto en tu plantilla de EmailJS:
+
+----------------------------------------
+ASUNTO DEL EMAIL:
+----------------------------------------
+Nuevo contacto de Livoo: {{subject}}
+
+----------------------------------------
+CONTENIDO DEL EMAIL:
+----------------------------------------
+Has recibido un nuevo mensaje de contacto desde Livoo Bienes Raíces:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INFORMACIÓN DE CONTACTO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Nombre: {{from_name}}
+Email: {{from_email}}
+Teléfono: {{phone}}
+Asunto: {{subject}}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MENSAJE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{{message}}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Este mensaje fue enviado desde el formulario de contacto de Livoo Bienes Raíces.
+Fecha: {{date}}
+
+========================================
+CONFIGURACIÓN ADICIONAL:
+========================================
+
+To Email: manuel@livoo.io
+From Name: Livoo Bienes Raíces
+Reply To: {{from_email}}
+
+========================================
+VARIABLES DISPONIBLES:
+========================================
+
+{{from_name}}    - Nombre del remitente
+{{from_email}}   - Email del remitente
+{{phone}}        - Teléfono
+{{subject}}      - Asunto del mensaje
+{{message}}      - Mensaje del usuario
+{{to_email}}     - Email destino (manuel@livoo.io)
+{{date}}         - Fecha actual (si está disponible)
+
+========================================
+

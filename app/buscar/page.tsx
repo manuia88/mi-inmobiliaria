@@ -1,17 +1,22 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import PropertyCard from '@/components/PropertyCard'
 import { Property } from '@/types/property'
-import { SlidersHorizontal } from 'lucide-react'
+import { SlidersHorizontal, Search as SearchIcon } from 'lucide-react'
 
-export default function PropiedadesPage() {
+export default function BuscarPage() {
+  const searchParams = useSearchParams()
   const router = useRouter()
+  
   const [properties, setProperties] = useState<Property[]>([])
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
-  const [transaction, setTransaction] = useState<string>('')
+  
+  // Filtros
+  const [transaction, setTransaction] = useState<string>(searchParams.get('transaction') || '')
+  const [location, setLocation] = useState<string>(searchParams.get('location') || '')
   const [propertyType, setPropertyType] = useState<string[]>([])
   const [minPrice, setMinPrice] = useState<string>('')
   const [maxPrice, setMaxPrice] = useState<string>('')
@@ -19,6 +24,7 @@ export default function PropiedadesPage() {
   const [bathrooms, setBathrooms] = useState<string>('')
   const [sortBy, setSortBy] = useState<string>('recent')
 
+  // Cargar propiedades
   useEffect(() => {
     async function loadProperties() {
       try {
@@ -26,7 +32,6 @@ export default function PropiedadesPage() {
         if (response.ok) {
           const data = await response.json()
           setProperties(data.properties || [])
-          setFilteredProperties(data.properties || [])
         }
       } catch (error) {
         console.error('Error al cargar propiedades:', error)
@@ -37,19 +42,34 @@ export default function PropiedadesPage() {
     loadProperties()
   }, [])
 
+  // Aplicar filtros
   useEffect(() => {
     let filtered = [...properties]
 
-    if (transaction) {
+    // Filtro por transacción
+    if (transaction && transaction !== 'Tipo de Transacción') {
       filtered = filtered.filter(p => 
         p.transaction.toLowerCase() === transaction.toLowerCase()
       )
     }
 
+    // Filtro por ubicación
+    if (location) {
+      const locationLower = location.toLowerCase()
+      filtered = filtered.filter(p => 
+        p.location.city?.toLowerCase().includes(locationLower) ||
+        p.location.state?.toLowerCase().includes(locationLower) ||
+        p.location.zipCode?.includes(location) ||
+        p.location.address?.toLowerCase().includes(locationLower)
+      )
+    }
+
+    // Filtro por tipo de propiedad
     if (propertyType.length > 0) {
       filtered = filtered.filter(p => propertyType.includes(p.type))
     }
 
+    // Filtro por precio
     if (minPrice) {
       const min = parseFloat(minPrice)
       filtered = filtered.filter(p => p.price >= min)
@@ -59,16 +79,19 @@ export default function PropiedadesPage() {
       filtered = filtered.filter(p => p.price <= max)
     }
 
+    // Filtro por recámaras
     if (bedrooms) {
       const beds = bedrooms === '5+' ? 5 : parseInt(bedrooms)
       filtered = filtered.filter(p => p.features.bedrooms >= beds)
     }
 
+    // Filtro por baños
     if (bathrooms) {
       const baths = bathrooms === '3+' ? 3 : parseInt(bathrooms)
       filtered = filtered.filter(p => p.features.bathrooms >= baths)
     }
 
+    // Ordenamiento
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'price-asc':
@@ -86,7 +109,7 @@ export default function PropiedadesPage() {
     })
 
     setFilteredProperties(filtered)
-  }, [properties, transaction, propertyType, minPrice, maxPrice, bedrooms, bathrooms, sortBy])
+  }, [properties, transaction, location, propertyType, minPrice, maxPrice, bedrooms, bathrooms, sortBy])
 
   const handlePropertyTypeChange = (type: string) => {
     setPropertyType(prev => 
@@ -98,11 +121,13 @@ export default function PropiedadesPage() {
 
   const clearFilters = () => {
     setTransaction('')
+    setLocation('')
     setPropertyType([])
     setMinPrice('')
     setMaxPrice('')
     setBedrooms('')
     setBathrooms('')
+    router.push('/buscar')
   }
 
   if (loading) {
@@ -121,8 +146,10 @@ export default function PropiedadesPage() {
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-3xl font-bold text-gray-900">Todas las Propiedades</h1>
-          <p className="text-gray-600 mt-2">Mostrando {filteredProperties.length} propiedades</p>
+          <h1 className="text-3xl font-bold text-gray-900">Resultados de Búsqueda</h1>
+          <p className="text-gray-600 mt-2">
+            {filteredProperties.length} {filteredProperties.length === 1 ? 'propiedad encontrada' : 'propiedades encontradas'}
+          </p>
         </div>
       </div>
 
@@ -168,6 +195,18 @@ export default function PropiedadesPage() {
                     <span>Renta</span>
                   </label>
                 </div>
+              </div>
+
+              {/* Ubicación */}
+              <div className="mb-6">
+                <h3 className="font-medium mb-3">Ubicación</h3>
+                <input
+                  type="text"
+                  placeholder="Ciudad, colonia o CP"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="input-field"
+                />
               </div>
 
               {/* Tipo de Propiedad */}
@@ -264,7 +303,7 @@ export default function PropiedadesPage() {
             {/* Barra de Ordenamiento */}
             <div className="bg-white rounded-xl shadow-md p-4 mb-6 flex justify-between items-center">
               <span className="text-gray-600">
-                {filteredProperties.length} propiedades encontradas
+                {filteredProperties.length} {filteredProperties.length === 1 ? 'propiedad encontrada' : 'propiedades encontradas'}
               </span>
               <select 
                 value={sortBy}
@@ -288,6 +327,7 @@ export default function PropiedadesPage() {
               </div>
             ) : (
               <div className="bg-white rounded-xl shadow-md p-12 text-center">
+                <SearchIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   No se encontraron propiedades
                 </h3>
@@ -302,30 +342,10 @@ export default function PropiedadesPage() {
                 </button>
               </div>
             )}
-
-            {/* Paginación */}
-            <div className="mt-8 flex justify-center">
-              <nav className="flex items-center space-x-2">
-                <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                  Anterior
-                </button>
-                <button className="px-4 py-2 bg-primary-600 text-white rounded-lg">
-                  1
-                </button>
-                <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                  2
-                </button>
-                <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                  3
-                </button>
-                <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                  Siguiente
-                </button>
-              </nav>
-            </div>
           </div>
         </div>
       </div>
     </div>
   )
 }
+

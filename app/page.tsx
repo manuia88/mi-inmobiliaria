@@ -1,10 +1,40 @@
 import Link from 'next/link'
-import { Search, Home, Shield, TrendingUp, Award } from 'lucide-react'
+import { Home, Shield, TrendingUp, Award } from 'lucide-react'
 import PropertyCard from '@/components/PropertyCard'
-import { properties } from '@/data/properties'
+import SearchForm from '@/components/SearchForm'
+import { Property } from '@/types/property'
 
-export default function HomePage() {
-  const featuredProperties = properties.filter(p => p.featured).slice(0, 3)
+async function getFeaturedProperties(): Promise<Property[]> {
+  try {
+    // Construir URL base para el fetch
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL 
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+      : process.env.NODE_ENV === 'production'
+      ? 'https://mi-inmobiliaria.vercel.app' // Ajusta según tu URL de Vercel
+      : 'http://localhost:3000'
+    
+    const response = await fetch(`${baseUrl}/api/properties`, {
+      next: { revalidate: 3600 }, // Cache por 1 hora
+    })
+
+    if (!response.ok) {
+      console.error('Error al obtener propiedades')
+      return []
+    }
+
+    const data = await response.json()
+    const properties: Property[] = data.properties || []
+    
+    // Filtrar propiedades destacadas
+    return properties.filter(p => p.featured).slice(0, 3)
+  } catch (error) {
+    console.error('Error en getFeaturedProperties:', error)
+    return []
+  }
+}
+
+export default async function HomePage() {
+  const featuredProperties = await getFeaturedProperties()
 
   return (
     <div>
@@ -18,33 +48,14 @@ export default function HomePage() {
       >
         <div className="max-w-4xl mx-auto px-4 text-center text-white">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Encuentra tu hogar ideal
+            El escenario fértil donde tus sueños echan raíces
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-gray-200">
             Miles de propiedades disponibles en las mejores ubicaciones
           </p>
 
           {/* Buscador Simple */}
-          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-3xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <select className="input-field">
-                <option>Tipo de Transacción</option>
-                <option>Comprar</option>
-                <option>Rentar</option>
-              </select>
-              
-              <input
-                type="text"
-                placeholder="Ciudad, colonia o código postal"
-                className="input-field"
-              />
-              
-              <button className="btn-primary flex items-center justify-center">
-                <Search className="h-5 w-5 mr-2" />
-                Buscar
-              </button>
-            </div>
-          </div>
+          <SearchForm />
         </div>
       </section>
 

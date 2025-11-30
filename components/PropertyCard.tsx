@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Bed, Bath, Maximize, Car, MapPin } from 'lucide-react'
-import { Property } from '@/data/properties'
+import { Property } from '@/types/property'
 
 interface PropertyCardProps {
   property: Property
