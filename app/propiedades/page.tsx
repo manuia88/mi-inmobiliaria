@@ -18,6 +18,8 @@ export default function PropiedadesPage() {
   const [bedrooms, setBedrooms] = useState<string>('')
   const [bathrooms, setBathrooms] = useState<string>('')
   const [parking, setParking] = useState<string>('')
+  const [minSize, setMinSize] = useState<string>('')
+  const [maxSize, setMaxSize] = useState<string>('')
   const [sortBy, setSortBy] = useState<string>('recent')
 
   useEffect(() => {
@@ -26,6 +28,8 @@ export default function PropiedadesPage() {
         const response = await fetch('/api/properties')
         if (response.ok) {
           const data = await response.json()
+          console.log('📊 Propiedades cargadas:', data.properties?.length)
+          console.log('📋 Tipos encontrados:', [...new Set(data.properties?.map((p: Property) => p.type))])
           setProperties(data.properties || [])
           setFilteredProperties(data.properties || [])
         }
@@ -41,14 +45,22 @@ export default function PropiedadesPage() {
   useEffect(() => {
     let filtered = [...properties]
 
+    console.log('🔍 Aplicando filtros:', { 
+      transaction, 
+      propertyType, 
+      totalProperties: properties.length 
+    })
+
     if (transaction) {
       filtered = filtered.filter(p => 
         p.transaction.toLowerCase() === transaction.toLowerCase()
       )
+      console.log(`  ✅ Filtro transacción (${transaction}): ${filtered.length} propiedades`)
     }
 
     if (propertyType.length > 0) {
       filtered = filtered.filter(p => propertyType.includes(p.type))
+      console.log(`  ✅ Filtro tipo (${propertyType.join(', ')}): ${filtered.length} propiedades`)
     }
 
     if (minPrice) {
@@ -75,6 +87,15 @@ export default function PropiedadesPage() {
       filtered = filtered.filter(p => p.features.parking >= parkingSpaces)
     }
 
+    if (minSize) {
+      const min = parseFloat(minSize)
+      filtered = filtered.filter(p => (p.features.constructionArea || 0) >= min)
+    }
+    if (maxSize) {
+      const max = parseFloat(maxSize)
+      filtered = filtered.filter(p => (p.features.constructionArea || 0) <= max)
+    }
+
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'price-asc':
@@ -92,7 +113,7 @@ export default function PropiedadesPage() {
     })
 
     setFilteredProperties(filtered)
-  }, [properties, transaction, propertyType, minPrice, maxPrice, bedrooms, bathrooms, parking, sortBy])
+  }, [properties, transaction, propertyType, minPrice, maxPrice, bedrooms, bathrooms, parking, minSize, maxSize, sortBy])
 
   const handlePropertyTypeChange = (type: string) => {
     setPropertyType(prev => 
@@ -110,6 +131,8 @@ export default function PropiedadesPage() {
     setBedrooms('')
     setBathrooms('')
     setParking('')
+    setMinSize('')
+    setMaxSize('')
   }
 
   if (loading) {
@@ -204,14 +227,35 @@ export default function PropiedadesPage() {
                     placeholder="Precio mínimo"
                     value={minPrice}
                     onChange={(e) => setMinPrice(e.target.value)}
-                    className="input-field"
+                    className="input-field text-sm"
                   />
                   <input
                     type="number"
                     placeholder="Precio máximo"
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
-                    className="input-field"
+                    className="input-field text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Tamaño de Construcción */}
+              <div className="mb-6">
+                <h3 className="font-medium mb-3">Tamaño de Construcción</h3>
+                <div className="space-y-3">
+                  <input
+                    type="number"
+                    placeholder="m² mínimos"
+                    value={minSize}
+                    onChange={(e) => setMinSize(e.target.value)}
+                    className="input-field text-sm"
+                  />
+                  <input
+                    type="number"
+                    placeholder="m² máximos"
+                    value={maxSize}
+                    onChange={(e) => setMaxSize(e.target.value)}
+                    className="input-field text-sm"
                   />
                 </div>
               </div>

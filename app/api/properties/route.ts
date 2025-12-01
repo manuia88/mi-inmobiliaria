@@ -46,15 +46,23 @@ function mapProperty(ebProperty: EasyBrokerProperty): Property {
   const price = operation?.amount || 0
   const currency = operation?.currency || 'MXN'
 
-  // Mapear tipo de propiedad
+  // Mapear tipo de propiedad - más completo para EasyBroker
   const propertyTypeMap: Record<string, 'Casa' | 'Departamento' | 'Terreno' | 'Oficina' | 'Local Comercial'> = {
     house: 'Casa',
+    casa: 'Casa',
     apartment: 'Departamento',
+    departamento: 'Departamento',
+    condominium: 'Departamento',
+    flat: 'Departamento',
     land: 'Terreno',
+    terreno: 'Terreno',
     office: 'Oficina',
+    oficina: 'Oficina',
     commercial: 'Local Comercial',
+    'local comercial': 'Local Comercial',
+    warehouse: 'Local Comercial',
   }
-  const type = propertyTypeMap[ebProperty.property_type?.toLowerCase()] || 'Casa'
+  const type = propertyTypeMap[ebProperty.property_type?.toLowerCase()] || 'Departamento'
 
   // Mapear estado
   const statusMap: Record<string, 'Disponible' | 'Vendido' | 'Rentado'> = {
