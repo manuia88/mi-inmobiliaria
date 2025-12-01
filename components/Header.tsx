@@ -20,7 +20,7 @@ export default function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center">
             <Image 
               src="/livoo_sin_fondo.png" 
               alt="Livoo Bienes Raíces" 
@@ -30,7 +30,6 @@ export default function Header() {
               priority
               unoptimized={false}
             />
-            <span className="text-sm font-semibold text-gray-700 hidden sm:inline">BIENES RAÍCES</span>
           </Link>
 
           {/* Desktop Navigation */}

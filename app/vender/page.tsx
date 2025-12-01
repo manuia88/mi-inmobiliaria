@@ -1,68 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { Upload, CheckCircle, Loader2 } from 'lucide-react'
-import { sendSellPropertyEmail } from '@/lib/emailService'
-import { insertSellPropertyLead } from '@/lib/supabase'
-import ReCAPTCHAComponent from '@/components/ReCAPTCHA'
+import { Loader2 } from 'lucide-react'
 
 export default function VenderPage() {
-  const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
-
-  const handleRecaptchaChange = (token: string | null) => {
-    setRecaptchaToken(token)
-  }
-
-  const handleRecaptchaExpired = () => {
-    setRecaptchaToken(null)
-  }
-
-  const handleRecaptchaError = () => {
-    setRecaptchaToken(null)
-    setError('Error al verificar reCAPTCHA. Por favor, intenta de nuevo.')
-  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    // Verificar reCAPTCHA primero
-    if (!recaptchaToken) {
-      setError('Por favor, completa la verificación reCAPTCHA.')
-      setLoading(false)
-      return
-    }
-
-    // Validar reCAPTCHA en el servidor
-    try {
-      const recaptchaResponse = await fetch('/api/recaptcha', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token: recaptchaToken }),
-      })
-
-      const recaptchaData = await recaptchaResponse.json()
-
-      if (!recaptchaData.success) {
-        setError(recaptchaData.error || 'Verificación de reCAPTCHA fallida. Por favor, intenta de nuevo.')
-        setRecaptchaToken(null)
-        setLoading(false)
-        return
-      }
-    } catch (err) {
-      console.error('Error al verificar reCAPTCHA:', err)
-      setError('Error al verificar reCAPTCHA. Por favor, intenta de nuevo.')
-      setRecaptchaToken(null)
-      setLoading(false)
-      return
-    }
-
+    // Obtener datos del formulario
     const formData = new FormData(e.currentTarget)
     const formValues = {
       name: formData.get('name') as string,
@@ -80,59 +30,52 @@ export default function VenderPage() {
       constructionArea: formData.get('constructionArea') as string,
       landArea: formData.get('landArea') as string,
       parking: formData.get('parking') as string,
-      description: formData.get('description') as string,
     }
 
     try {
-      // Enviar email con EmailJS
-      const emailResult = await sendSellPropertyEmail(formValues)
-
-      // Guardar en Supabase (si está configurado)
-      await insertSellPropertyLead({
-        ...formValues,
-        bedrooms: formValues.bedrooms ? parseInt(formValues.bedrooms) : undefined,
-        bathrooms: formValues.bathrooms ? parseFloat(formValues.bathrooms) : undefined,
-        construction_area: formValues.constructionArea ? parseInt(formValues.constructionArea) : undefined,
-        land_area: formValues.landArea ? parseInt(formValues.landArea) : undefined,
-        parking: formValues.parking ? parseInt(formValues.parking) : undefined,
-        zip_code: formValues.zipCode,
+      // Paso 1: Guardar en Supabase
+      const response = await fetch('/api/capture-lead', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formValues),
       })
 
-      if (emailResult.success) {
-        setSubmitted(true)
-        setRecaptchaToken(null)
-        e.currentTarget.reset()
-      } else {
-        setError(emailResult.message)
+      const result = await response.json()
+
+      if (!result.success) {
+        setError(result.error || 'Error al guardar los datos. Por favor, intenta de nuevo.')
+        setLoading(false)
+        return
       }
+
+      // Paso 2: Construir mensaje para WhatsApp
+      const whatsappMessage = `¡Hola! Me interesa vender mi propiedad.
+
+📋 *Información:*
+• Nombre: ${formValues.name}
+• Tipo: ${formValues.property_type}
+• Transacción: ${formValues.transaction_type}
+• Ubicación: ${formValues.address}, ${formValues.city}, ${formValues.state}
+• Precio esperado: $${parseInt(formValues.price).toLocaleString('es-MX')} MXN
+${formValues.bedrooms ? `• Recámaras: ${formValues.bedrooms}` : ''}
+${formValues.bathrooms ? `• Baños: ${formValues.bathrooms}` : ''}
+${formValues.constructionArea ? `• Construcción: ${formValues.constructionArea} m²` : ''}
+${formValues.landArea ? `• Terreno: ${formValues.landArea} m²` : ''}
+
+¿Podrían ayudarme con el proceso?`
+
+      // Codificar mensaje para URL
+      const encodedMessage = encodeURIComponent(whatsappMessage)
+
+      // Redirigir a WhatsApp
+      window.location.href = `https://wa.me/5215540646386?text=${encodedMessage}`
     } catch (err) {
       console.error('Error al enviar formulario:', err)
       setError('Error al enviar la solicitud. Por favor, intenta de nuevo.')
-    } finally {
       setLoading(false)
     }
-  }
-
-  if (submitted) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-        <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
-          <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            ¡Solicitud Enviada!
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Hemos recibido la información de tu propiedad. Te contactaremos en menos de 24 horas.
-          </p>
-          <button
-            onClick={() => setSubmitted(false)}
-            className="btn-primary"
-          >
-            Registrar Otra Propiedad
-          </button>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -177,9 +120,9 @@ export default function VenderPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 text-primary-600 text-2xl font-bold mb-4">
               2
             </div>
-            <h3 className="text-xl font-semibold mb-2">Recibe ofertas</h3>
+            <h3 className="text-xl font-semibold mb-2">Habla con nosotros</h3>
             <p className="text-gray-600">
-              Te contactamos con compradores interesados
+              Te redirigiremos a WhatsApp para continuar el proceso
             </p>
           </div>
           <div className="text-center">
@@ -234,13 +177,6 @@ export default function VenderPage() {
                   required
                   disabled={loading}
                 />
-                <select name="relation" className="input-field" required disabled={loading}>
-                  <option value="">Relación con la propiedad *</option>
-                  <option>Propietario</option>
-                  <option>Familiar</option>
-                  <option>Agente</option>
-                  <option>Otro</option>
-                </select>
               </div>
             </div>
 
@@ -268,14 +204,6 @@ export default function VenderPage() {
                   name="address"
                   placeholder="Calle y número *"
                   className="input-field md:col-span-2"
-                  required
-                  disabled={loading}
-                />
-                <input
-                  type="text"
-                  name="colony"
-                  placeholder="Colonia *"
-                  className="input-field"
                   required
                   disabled={loading}
                 />
@@ -317,7 +245,7 @@ export default function VenderPage() {
             {/* Características */}
             <div>
               <h3 className="text-lg font-semibold mb-4 text-primary-600">
-                Características
+                Características (Opcional)
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <input
@@ -361,70 +289,10 @@ export default function VenderPage() {
                   min="0"
                   disabled={loading}
                 />
-                <input
-                  type="number"
-                  name="yearBuilt"
-                  placeholder="Año construcción"
-                  className="input-field"
-                  min="1900"
-                  max={new Date().getFullYear()}
-                  disabled={loading}
-                />
               </div>
             </div>
 
-            {/* Amenidades */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-primary-600">
-                Amenidades
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {['Jardín', 'Alberca', 'Gym', 'Seguridad 24/7', 'Elevador', 'Estacionamiento Visitas', 'Cocina Integral', 'Closets', 'Terraza', 'Balcón', 'Cuarto Servicio', 'Bodega'].map((amenity) => (
-                  <label key={amenity} className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <span className="text-sm">{amenity}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Descripción */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-primary-600">
-                Descripción
-              </h3>
-              <textarea
-                name="description"
-                rows={5}
-                placeholder="Describe tu propiedad... (ubicación, características especiales, acabados, etc.)"
-                className="input-field resize-none"
-                disabled={loading}
-              />
-            </div>
-
-            {/* Fotos */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-primary-600">
-                Fotos
-              </h3>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary-600 transition cursor-pointer">
-                <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 mb-2">
-                  Arrastra tus fotos aquí o haz click para seleccionar
-                </p>
-                <p className="text-sm text-gray-500">
-                  Sube hasta 20 fotos (JPG, PNG)
-                </p>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="hidden"
-                />
-              </div>
-            </div>
-
-            {/* Términos */}
+            {/* Términos y Aviso de Privacidad */}
             <div className="space-y-2">
               <label className="flex items-start">
                 <input 
@@ -457,37 +325,20 @@ export default function VenderPage() {
                   {' '}*
                 </span>
               </label>
-              <label className="flex items-start">
-                <input 
-                  type="checkbox" 
-                  className="mt-1 mr-2" 
-                  disabled={loading}
-                />
-                <span className="text-sm text-gray-600">
-                  Acepto recibir comunicaciones promocionales
-                </span>
-              </label>
             </div>
-
-            {/* reCAPTCHA */}
-            <ReCAPTCHAComponent
-              onChange={handleRecaptchaChange}
-              onExpired={handleRecaptchaExpired}
-              onError={handleRecaptchaError}
-            />
 
             <button 
               type="submit" 
               className="btn-primary w-full text-lg py-4 flex items-center justify-center"
-              disabled={loading || !recaptchaToken}
+              disabled={loading}
             >
               {loading ? (
                 <>
                   <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  Enviando...
+                  Guardando...
                 </>
               ) : (
-                'Enviar Solicitud'
+                'Continuar en WhatsApp'
               )}
             </button>
           </form>

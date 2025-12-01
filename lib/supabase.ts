@@ -1,10 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
+// Cliente para el frontend (usa ANON_KEY - solo lectura y escritura limitada)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://grydfdsaepwzrzrthwqv.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_t6rE8Uo2L3sZkL1tpVYcylUg_7fVnr3c26'
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase no está configurado. Las variables de entorno SUPABASE_URL y SUPABASE_ANON_KEY son requeridas.')
+  console.warn('Supabase no está configurado. Las variables de entorno NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY son requeridas.')
 }
 
 export const supabase = supabaseUrl && supabaseAnonKey

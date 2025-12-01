@@ -5,6 +5,7 @@ import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Linkedin, CheckCircle,
 import { sendContactEmail } from '@/lib/emailService'
 import { insertContactLead } from '@/lib/supabase'
 import ReCAPTCHAComponent from '@/components/ReCAPTCHA'
+import GoogleMapComponent from '@/components/GoogleMap'
 
 export default function ContactoPage() {
   const [submitted, setSubmitted] = useState(false)
@@ -216,11 +217,11 @@ export default function ContactoPage() {
             {/* Mapa */}
             <div className="mt-8">
               <h3 className="font-semibold text-lg mb-4">Ubicación</h3>
-              <div className="bg-gray-300 rounded-xl h-64 flex items-center justify-center">
-                <p className="text-gray-600">
-                  Mapa de Google Maps aquí
-                </p>
-              </div>
+              <GoogleMapComponent 
+                lat={19.4326} 
+                lng={-99.1332}
+                address="Av. Principal 123, Col. Centro, Ciudad de México"
+              />
             </div>
           </div>
 
