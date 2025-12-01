@@ -1,6 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    // Compatibilidad: mantener domains para máxima compatibilidad
+    domains: [
+      'placehold.co',
+      'images.unsplash.com',
+      'assets.easybroker.com',
+      'api.easybroker.com',
+      'cdn.easybroker.com',
+      'img.easybroker.com',
+      'media.easybroker.com',
+    ],
+    // Moderno: usar remotePatterns (recomendado por Next.js)
     remotePatterns: [
       {
         protocol: 'https',
@@ -17,6 +28,30 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'assets.easybroker.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.easybroker.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.easybroker.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.easybroker.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.easybroker.com',
         port: '',
         pathname: '/**',
       },

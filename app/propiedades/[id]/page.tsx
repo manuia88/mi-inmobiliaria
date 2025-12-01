@@ -28,9 +28,13 @@ async function getAllProperties(): Promise<Property[]> {
   }
 }
 
-export default async function PropertyDetailPage({ params }: { params: { id: string } }) {
+export default async function PropertyDetailPage({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+  // Manejar params como Promise (Next.js 15+) o objeto (Next.js 13-14)
+  const resolvedParams = await Promise.resolve(params)
+  const propertyId = resolvedParams.id
+
   const properties = await getAllProperties()
-  const property = properties.find(p => p.id === params.id)
+  const property = properties.find(p => p.id === propertyId)
 
   if (!property) {
     notFound()
