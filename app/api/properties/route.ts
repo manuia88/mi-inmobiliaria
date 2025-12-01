@@ -144,7 +144,7 @@ export async function GET() {
     const allProperties = (data.content || []).map(mapProperty)
     
     // FILTRAR: Solo mostrar Casas y Departamentos
-    const properties = allProperties.filter(p => 
+    const properties = allProperties.filter((p: Property) => 
       p.type === 'Casa' || p.type === 'Departamento'
     )
 
