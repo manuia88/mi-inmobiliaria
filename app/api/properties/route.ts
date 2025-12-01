@@ -141,15 +141,7 @@ export async function GET() {
     const data = await response.json()
 
     // Mapear las propiedades al formato del frontend
-    const allProperties = (data.content || []).map(mapProperty)
-    
-    // FILTRAR: Solo mostrar Casas y Departamentos
-    const properties = allProperties.filter((p: Property) => 
-      p.type === 'Casa' || p.type === 'Departamento'
-    )
-
-    console.log(`📊 Total de EasyBroker: ${data.content?.length || 0}`)
-    console.log(`✅ Filtradas (Casa/Depto): ${properties.length}`)
+    const properties = (data.content || []).map(mapProperty)
 
     return NextResponse.json({ properties })
   } catch (error) {
