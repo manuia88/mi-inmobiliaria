@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
       construction_area: body.constructionArea ? parseInt(body.constructionArea) : undefined,
       land_area: body.landArea ? parseInt(body.landArea) : undefined,
       parking: body.parking ? parseInt(body.parking) : undefined,
+      antiguedad: body.antiguedad ? parseInt(body.antiguedad) : undefined,
     }
 
     // Guardar en Supabase

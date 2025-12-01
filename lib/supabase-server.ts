@@ -76,6 +76,7 @@ export async function insertCaptacionLead(leadData: {
   construction_area?: number
   land_area?: number
   parking?: number
+  antiguedad?: number
   description?: string
   photo_urls?: string[]
 }): Promise<{ success: boolean; data?: any; error?: string }> {

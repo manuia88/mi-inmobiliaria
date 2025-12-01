@@ -30,6 +30,7 @@ export default function VenderPage() {
       constructionArea: formData.get('constructionArea') as string,
       landArea: formData.get('landArea') as string,
       parking: formData.get('parking') as string,
+      antiguedad: formData.get('antiguedad') as string,
     }
 
     try {
@@ -63,6 +64,7 @@ ${formValues.bedrooms ? `• Recámaras: ${formValues.bedrooms}` : ''}
 ${formValues.bathrooms ? `• Baños: ${formValues.bathrooms}` : ''}
 ${formValues.constructionArea ? `• Construcción: ${formValues.constructionArea} m²` : ''}
 ${formValues.landArea ? `• Terreno: ${formValues.landArea} m²` : ''}
+${formValues.antiguedad ? `• Antigüedad: ${formValues.antiguedad} años` : ''}
 
 ¿Podrían ayudarme con el proceso?`
 
@@ -285,6 +287,14 @@ ${formValues.landArea ? `• Terreno: ${formValues.landArea} m²` : ''}
                   type="number"
                   name="parking"
                   placeholder="Estacionamientos"
+                  className="input-field"
+                  min="0"
+                  disabled={loading}
+                />
+                <input
+                  type="number"
+                  name="antiguedad"
+                  placeholder="Años de construcción"
                   className="input-field"
                   min="0"
                   disabled={loading}
