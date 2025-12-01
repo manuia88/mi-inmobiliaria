@@ -5,6 +5,10 @@ import { Bed, Bath, Maximize, Car, MapPin } from 'lucide-react'
 import PropertyCard from '@/components/PropertyCard'
 import PropertyContactForm from '@/components/PropertyContactForm'
 
+// Forzar renderizado dinámico para evitar errores en build time
+export const dynamic = 'force-dynamic'
+export const dynamicParams = true
+
 async function getAllProperties(): Promise<Property[]> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL 

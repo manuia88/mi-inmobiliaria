@@ -4,17 +4,24 @@ import PropertyCard from '@/components/PropertyCard'
 import SearchForm from '@/components/SearchForm'
 import { Property } from '@/types/property'
 
+// NO hacer fetch en build time, solo en runtime
+export const dynamic = 'force-dynamic'
+
 async function getFeaturedProperties(): Promise<Property[]> {
   try {
-    // Construir URL base para el fetch
+    // En build time, retornar array vacío
+    if (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL) {
+      return []
+    }
+
     const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL 
       ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-      : process.env.NODE_ENV === 'production'
-      ? 'https://mi-inmobiliaria.vercel.app' // Ajusta según tu URL de Vercel
+      : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
       : 'http://localhost:3000'
     
     const response = await fetch(`${baseUrl}/api/properties`, {
-      next: { revalidate: 3600 }, // Cache por 1 hora
+      cache: 'no-store', // No cachear en build
     })
 
     if (!response.ok) {
