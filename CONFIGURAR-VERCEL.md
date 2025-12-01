@@ -16,7 +16,7 @@
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://grydfdsaepwzrzrthwqv.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_t6rE8Uo2L3sZkL1tpVYcylUg_7fVnr3c26
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyeWRpZHNhZXB4Y3J6YmZ0dnF3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDU0NzY1MiwiZXhwIjoyMDgwMTIzNjUyfQ.f7ca2ZgoqLmdcTOB8mJAwPyfqNWDYZoibzBmeig95ec
+SUPABASE_SERVICE_ROLE_KEY=[TU_SERVICE_ROLE_KEY_AQUI]
 
 # EasyBroker
 EASYBROKER_API_KEY=ctblnd43g6u7w06gj3wfi96wpfan2u
@@ -79,9 +79,9 @@ Ambientes: Production, Preview, Development
 
 ```
 SUPABASE_SERVICE_ROLE_KEY
-Valor: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyeWRpZHNhZXB4Y3J6YmZ0dnF3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDU0NzY1MiwiZXhwIjoyMDgwMTIzNjUyfQ.f7ca2ZgoqLmdcTOB8mJAwPyfqNWDYZoibzBmeig95ec
+Valor: [Obtén esta clave de tu dashboard de Supabase → Settings → API → service_role key]
 Ambientes: Production, Preview, Development
-⚠️ IMPORTANTE: Esta es secreta, solo servidor
+⚠️ IMPORTANTE: Esta es secreta, solo servidor. NUNCA la expongas en el código.
 ```
 
 #### EasyBroker:

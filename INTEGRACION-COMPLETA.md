@@ -89,7 +89,7 @@ He finalizado la integración completa del backend con Supabase, incluyendo alma
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://grydfdsaepwzrzrthwqv.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_t6rE8Uo2L3sZkL1tpVYcylUg_7fVnr3c26
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_SERVICE_ROLE_KEY=[TU_SERVICE_ROLE_KEY]
 
 # EmailJS
 NEXT_PUBLIC_EMAILJS_SERVICE_ID=service_u4wi7qs

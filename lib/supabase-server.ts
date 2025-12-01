@@ -2,8 +2,9 @@ import { createClient } from '@supabase/supabase-js'
 
 // Cliente de servidor con SERVICE_ROLE_KEY - Solo para uso en API routes
 // ⚠️ NUNCA exponer esta clave en el frontend
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'https://grydfdsaepwzrzrthwqv.supabase.co'
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyeWRpZHNhZXB4Y3J6YmZ0dnF3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDU0NzY1MiwiZXhwIjoyMDgwMTIzNjUyfQ.f7ca2ZgoqLmdcTOB8mJAwPyfqNWDYZoibzBmeig95ec'
+// ⚠️ NUNCA hardcodear esta clave en el código - solo usar variables de entorno
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!supabaseUrl || !supabaseServiceRoleKey) {
   console.error('⚠️ Supabase SERVICE_ROLE_KEY no está configurado. Las operaciones de servidor no funcionarán.')
