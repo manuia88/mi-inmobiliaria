@@ -256,32 +256,35 @@ ${formValues.antiguedad ? `• Antigüedad: ${formValues.antiguedad} años` : ''
             {/* Características */}
             <div>
               <h3 className="text-lg font-semibold mb-4 text-primary-600">
-                Características (Opcional)
+                Características de la Propiedad
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <input
                   type="number"
                   name="bedrooms"
-                  placeholder="Recámaras"
+                  placeholder="Recámaras *"
                   className="input-field"
                   min="0"
+                  required
                   disabled={loading}
                 />
                 <input
                   type="number"
                   name="bathrooms"
-                  placeholder="Baños"
+                  placeholder="Baños *"
                   className="input-field"
                   min="0"
                   step="0.5"
+                  required
                   disabled={loading}
                 />
                 <input
                   type="number"
                   name="constructionArea"
-                  placeholder="m² construcción"
+                  placeholder="m² construcción *"
                   className="input-field"
                   min="0"
+                  required
                   disabled={loading}
                 />
                 <input
@@ -295,17 +298,19 @@ ${formValues.antiguedad ? `• Antigüedad: ${formValues.antiguedad} años` : ''
                 <input
                   type="number"
                   name="parking"
-                  placeholder="Estacionamientos"
+                  placeholder="Estacionamientos *"
                   className="input-field"
                   min="0"
+                  required
                   disabled={loading}
                 />
                 <input
                   type="number"
                   name="antiguedad"
-                  placeholder="Años de construcción"
+                  placeholder="Antigüedad (años) *"
                   className="input-field"
                   min="0"
+                  required
                   disabled={loading}
                 />
               </div>
