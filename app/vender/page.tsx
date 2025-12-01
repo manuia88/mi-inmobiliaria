@@ -258,12 +258,12 @@ ${formValues.antiguedad ? `• Antigüedad: ${formValues.antiguedad} años` : ''
               <h3 className="text-lg font-semibold mb-4 text-primary-600">
                 Características de la Propiedad
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <input
                   type="number"
                   name="bedrooms"
                   placeholder="Recámaras *"
-                  className="input-field"
+                  className="input-field text-sm"
                   min="0"
                   required
                   disabled={loading}
@@ -272,7 +272,7 @@ ${formValues.antiguedad ? `• Antigüedad: ${formValues.antiguedad} años` : ''
                   type="number"
                   name="bathrooms"
                   placeholder="Baños *"
-                  className="input-field"
+                  className="input-field text-sm"
                   min="0"
                   step="0.5"
                   required
@@ -280,9 +280,18 @@ ${formValues.antiguedad ? `• Antigüedad: ${formValues.antiguedad} años` : ''
                 />
                 <input
                   type="number"
+                  name="parking"
+                  placeholder="Estacionamientos *"
+                  className="input-field text-sm"
+                  min="0"
+                  required
+                  disabled={loading}
+                />
+                <input
+                  type="number"
                   name="constructionArea"
-                  placeholder="m² construcción *"
-                  className="input-field"
+                  placeholder="m2 Construcción *"
+                  className="input-field text-sm"
                   min="0"
                   required
                   disabled={loading}
@@ -290,25 +299,16 @@ ${formValues.antiguedad ? `• Antigüedad: ${formValues.antiguedad} años` : ''
                 <input
                   type="number"
                   name="landArea"
-                  placeholder="m² terreno"
-                  className="input-field"
+                  placeholder="m2 Terreno"
+                  className="input-field text-sm"
                   min="0"
-                  disabled={loading}
-                />
-                <input
-                  type="number"
-                  name="parking"
-                  placeholder="Estacionamientos *"
-                  className="input-field"
-                  min="0"
-                  required
                   disabled={loading}
                 />
                 <input
                   type="number"
                   name="antiguedad"
-                  placeholder="Antigüedad (años) *"
-                  className="input-field"
+                  placeholder="Antigüedad *"
+                  className="input-field text-sm"
                   min="0"
                   required
                   disabled={loading}
