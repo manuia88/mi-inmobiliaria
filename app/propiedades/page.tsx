@@ -20,6 +20,7 @@ export default function PropiedadesPage() {
   const [parking, setParking] = useState<string>('')
   const [minSize, setMinSize] = useState<string>('')
   const [maxSize, setMaxSize] = useState<string>('')
+  const [location, setLocation] = useState<string>('')
   const [sortBy, setSortBy] = useState<string>('recent')
 
   useEffect(() => {
@@ -96,6 +97,16 @@ export default function PropiedadesPage() {
       filtered = filtered.filter(p => (p.features.constructionArea || 0) <= max)
     }
 
+    if (location) {
+      const searchTerm = location.toLowerCase()
+      filtered = filtered.filter(p => 
+        p.location.city?.toLowerCase().includes(searchTerm) ||
+        p.location.state?.toLowerCase().includes(searchTerm) ||
+        p.location.address?.toLowerCase().includes(searchTerm)
+      )
+      console.log(`  ✅ Filtro ubicación (${location}): ${filtered.length} propiedades`)
+    }
+
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'price-asc':
@@ -113,7 +124,7 @@ export default function PropiedadesPage() {
     })
 
     setFilteredProperties(filtered)
-  }, [properties, transaction, propertyType, minPrice, maxPrice, bedrooms, bathrooms, parking, minSize, maxSize, sortBy])
+  }, [properties, transaction, propertyType, minPrice, maxPrice, bedrooms, bathrooms, parking, minSize, maxSize, location, sortBy])
 
   const handlePropertyTypeChange = (type: string) => {
     setPropertyType(prev => 
@@ -133,6 +144,7 @@ export default function PropiedadesPage() {
     setParking('')
     setMinSize('')
     setMaxSize('')
+    setLocation('')
   }
 
   if (loading) {
@@ -239,9 +251,21 @@ export default function PropiedadesPage() {
                 </div>
               </div>
 
-              {/* Tamaño de Construcción */}
+              {/* Ubicación */}
               <div className="mb-6">
-                <h3 className="font-medium mb-3">Tamaño de Construcción</h3>
+                <h3 className="font-medium mb-3">Ubicación</h3>
+                <input
+                  type="text"
+                  placeholder="Ciudad o zona"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="input-field text-sm"
+                />
+              </div>
+
+              {/* Construcción */}
+              <div className="mb-6">
+                <h3 className="font-medium mb-3">Construcción</h3>
                 <div className="space-y-3">
                   <input
                     type="number"
