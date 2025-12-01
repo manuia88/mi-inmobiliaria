@@ -290,7 +290,7 @@ ${formValues.antiguedad ? `• Antigüedad: ${formValues.antiguedad} años` : ''
                 <input
                   type="number"
                   name="antiguedad"
-                  placeholder="Antigüedad *"
+                  placeholder="Antigüedad (Años) *"
                   className="input-field text-sm"
                   min="0"
                   required
