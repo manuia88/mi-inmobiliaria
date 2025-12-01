@@ -27,10 +27,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               alt={property.title}
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-300"
-              onError={(e) => {
-                // Fallback si la imagen falla
-                e.currentTarget.src = 'https://placehold.co/400x300?text=Sin+Imagen'
-              }}
+              unoptimized
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
@@ -74,29 +71,29 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           </div>
 
           {/* Características */}
-          <div className="grid grid-cols-4 gap-2 pt-4 border-t border-gray-200">
+          <div className="grid grid-cols-4 gap-3 pt-4 border-t border-gray-200">
             {property.features.bedrooms > 0 && (
-              <div className="flex items-center text-gray-700">
-                <Bed className="h-4 w-4 mr-1" />
-                <span className="text-sm">{property.features.bedrooms}</span>
+              <div className="flex flex-col items-center text-gray-700">
+                <Bed className="h-6 w-6 mb-1 text-primary-600" />
+                <span className="text-base font-semibold">{property.features.bedrooms}</span>
               </div>
             )}
             {property.features.bathrooms > 0 && (
-              <div className="flex items-center text-gray-700">
-                <Bath className="h-4 w-4 mr-1" />
-                <span className="text-sm">{property.features.bathrooms}</span>
+              <div className="flex flex-col items-center text-gray-700">
+                <Bath className="h-6 w-6 mb-1 text-primary-600" />
+                <span className="text-base font-semibold">{property.features.bathrooms}</span>
               </div>
             )}
             {property.features.constructionArea > 0 && (
-              <div className="flex items-center text-gray-700">
-                <Maximize className="h-4 w-4 mr-1" />
-                <span className="text-sm">{property.features.constructionArea}m²</span>
+              <div className="flex flex-col items-center text-gray-700">
+                <Maximize className="h-6 w-6 mb-1 text-primary-600" />
+                <span className="text-base font-semibold">{property.features.constructionArea}m²</span>
               </div>
             )}
             {property.features.parking > 0 && (
-              <div className="flex items-center text-gray-700">
-                <Car className="h-4 w-4 mr-1" />
-                <span className="text-sm">{property.features.parking}</span>
+              <div className="flex flex-col items-center text-gray-700">
+                <Car className="h-6 w-6 mb-1 text-primary-600" />
+                <span className="text-base font-semibold">{property.features.parking}</span>
               </div>
             )}
           </div>

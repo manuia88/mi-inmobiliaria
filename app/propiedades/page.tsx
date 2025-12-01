@@ -17,6 +17,7 @@ export default function PropiedadesPage() {
   const [maxPrice, setMaxPrice] = useState<string>('')
   const [bedrooms, setBedrooms] = useState<string>('')
   const [bathrooms, setBathrooms] = useState<string>('')
+  const [parking, setParking] = useState<string>('')
   const [sortBy, setSortBy] = useState<string>('recent')
 
   useEffect(() => {
@@ -60,13 +61,18 @@ export default function PropiedadesPage() {
     }
 
     if (bedrooms) {
-      const beds = bedrooms === '5+' ? 5 : parseInt(bedrooms)
+      const beds = bedrooms === '4+' ? 4 : parseInt(bedrooms)
       filtered = filtered.filter(p => p.features.bedrooms >= beds)
     }
 
     if (bathrooms) {
       const baths = bathrooms === '3+' ? 3 : parseInt(bathrooms)
       filtered = filtered.filter(p => p.features.bathrooms >= baths)
+    }
+
+    if (parking) {
+      const parkingSpaces = parking === '3+' ? 3 : parseInt(parking)
+      filtered = filtered.filter(p => p.features.parking >= parkingSpaces)
     }
 
     filtered.sort((a, b) => {
@@ -86,7 +92,7 @@ export default function PropiedadesPage() {
     })
 
     setFilteredProperties(filtered)
-  }, [properties, transaction, propertyType, minPrice, maxPrice, bedrooms, bathrooms, sortBy])
+  }, [properties, transaction, propertyType, minPrice, maxPrice, bedrooms, bathrooms, parking, sortBy])
 
   const handlePropertyTypeChange = (type: string) => {
     setPropertyType(prev => 
@@ -103,6 +109,7 @@ export default function PropiedadesPage() {
     setMaxPrice('')
     setBedrooms('')
     setBathrooms('')
+    setParking('')
   }
 
   if (loading) {
@@ -145,24 +152,24 @@ export default function PropiedadesPage() {
               <div className="mb-6">
                 <h3 className="font-medium mb-3">Tipo de Transacción</h3>
                 <div className="space-y-2">
-                  <label className="flex items-center">
+                  <label className="flex items-center cursor-pointer">
                     <input 
                       type="radio" 
                       name="transaction" 
                       value="Venta"
                       checked={transaction === 'Venta'}
-                      onChange={(e) => setTransaction(e.target.value)}
+                      onChange={(e) => setTransaction(transaction === 'Venta' ? '' : e.target.value)}
                       className="mr-2" 
                     />
                     <span>Venta</span>
                   </label>
-                  <label className="flex items-center">
+                  <label className="flex items-center cursor-pointer">
                     <input 
                       type="radio" 
                       name="transaction" 
                       value="Renta"
                       checked={transaction === 'Renta'}
-                      onChange={(e) => setTransaction(e.target.value)}
+                      onChange={(e) => setTransaction(transaction === 'Renta' ? '' : e.target.value)}
                       className="mr-2" 
                     />
                     <span>Renta</span>
@@ -174,8 +181,8 @@ export default function PropiedadesPage() {
               <div className="mb-6">
                 <h3 className="font-medium mb-3">Tipo de Propiedad</h3>
                 <div className="space-y-2">
-                  {['Casa', 'Departamento', 'Terreno', 'Oficina', 'Local Comercial'].map((type) => (
-                    <label key={type} className="flex items-center">
+                  {['Casa', 'Departamento'].map((type) => (
+                    <label key={type} className="flex items-center cursor-pointer">
                       <input 
                         type="checkbox" 
                         checked={propertyType.includes(type)}
@@ -213,11 +220,11 @@ export default function PropiedadesPage() {
               <div className="mb-6">
                 <h3 className="font-medium mb-3">Recámaras</h3>
                 <div className="grid grid-cols-3 gap-2">
-                  {[1, 2, 3, 4, '5+'].map((num) => (
+                  {[1, 2, 3, '4+'].map((num) => (
                     <button
                       key={num}
                       onClick={() => setBedrooms(bedrooms === String(num) ? '' : String(num))}
-                      className={`border rounded-lg py-2 transition ${
+                      className={`border rounded-lg py-2 transition font-medium ${
                         bedrooms === String(num)
                           ? 'border-primary-600 bg-primary-50 text-primary-600'
                           : 'border-gray-300 hover:border-primary-600 hover:bg-primary-50'
@@ -237,8 +244,28 @@ export default function PropiedadesPage() {
                     <button
                       key={num}
                       onClick={() => setBathrooms(bathrooms === String(num) ? '' : String(num))}
-                      className={`border rounded-lg py-2 transition ${
+                      className={`border rounded-lg py-2 transition font-medium ${
                         bathrooms === String(num)
+                          ? 'border-primary-600 bg-primary-50 text-primary-600'
+                          : 'border-gray-300 hover:border-primary-600 hover:bg-primary-50'
+                      }`}
+                    >
+                      {num}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Estacionamientos */}
+              <div className="mb-6">
+                <h3 className="font-medium mb-3">Estacionamientos</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 2, '3+'].map((num) => (
+                    <button
+                      key={num}
+                      onClick={() => setParking(parking === String(num) ? '' : String(num))}
+                      className={`border rounded-lg py-2 transition font-medium ${
+                        parking === String(num)
                           ? 'border-primary-600 bg-primary-50 text-primary-600'
                           : 'border-gray-300 hover:border-primary-600 hover:bg-primary-50'
                       }`}
