@@ -289,6 +289,15 @@ ${formValues.antiguedad ? `• Antigüedad: ${formValues.antiguedad} años` : ''
                 />
                 <input
                   type="number"
+                  name="antiguedad"
+                  placeholder="Antigüedad *"
+                  className="input-field text-sm"
+                  min="0"
+                  required
+                  disabled={loading}
+                />
+                <input
+                  type="number"
                   name="constructionArea"
                   placeholder="m2 Construcción *"
                   className="input-field text-sm"
@@ -302,15 +311,6 @@ ${formValues.antiguedad ? `• Antigüedad: ${formValues.antiguedad} años` : ''
                   placeholder="m2 Terreno"
                   className="input-field text-sm"
                   min="0"
-                  disabled={loading}
-                />
-                <input
-                  type="number"
-                  name="antiguedad"
-                  placeholder="Antigüedad *"
-                  className="input-field text-sm"
-                  min="0"
-                  required
                   disabled={loading}
                 />
               </div>
