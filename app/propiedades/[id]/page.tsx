@@ -55,28 +55,42 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Imagen Principal */}
-            <div className="relative h-96 lg:h-[600px] rounded-xl overflow-hidden">
-              <Image
-                src={property.images[0]}
-                alt={property.title}
-                fill
-                className="object-cover"
-              />
+            <div className="relative h-96 lg:h-[600px] rounded-xl overflow-hidden bg-gray-200">
+              {property.images && property.images.length > 0 && property.images[0] ? (
+                <Image
+                  src={property.images[0]}
+                  alt={property.title}
+                  fill
+                  className="object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://placehold.co/800x600?text=Sin+Imagen'
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                  <span>Sin imagen disponible</span>
+                </div>
+              )}
             </div>
 
             {/* Grid de Imágenes Secundarias */}
-            <div className="grid grid-cols-2 gap-4">
-              {property.images.slice(1, 5).map((image, index) => (
-                <div key={index} className="relative h-44 lg:h-[290px] rounded-xl overflow-hidden">
-                  <Image
-                    src={image}
-                    alt={`${property.title} - imagen ${index + 2}`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+            {property.images && property.images.length > 1 && (
+              <div className="grid grid-cols-2 gap-4">
+                {property.images.slice(1, 5).map((image, index) => (
+                  <div key={index} className="relative h-44 lg:h-[290px] rounded-xl overflow-hidden bg-gray-200">
+                    <Image
+                      src={image}
+                      alt={`${property.title} - imagen ${index + 2}`}
+                      fill
+                      className="object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://placehold.co/400x300?text=Sin+Imagen'
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

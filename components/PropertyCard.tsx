@@ -20,13 +20,23 @@ export default function PropertyCard({ property }: PropertyCardProps) {
     <Link href={`/propiedades/${property.id}`}>
       <div className="card overflow-hidden group cursor-pointer">
         {/* Imagen */}
-        <div className="relative h-64 overflow-hidden">
-          <Image
-            src={property.images[0]}
-            alt={property.title}
-            fill
-            className="object-cover group-hover:scale-110 transition-transform duration-300"
-          />
+        <div className="relative h-64 overflow-hidden bg-gray-200">
+          {property.images && property.images.length > 0 && property.images[0] ? (
+            <Image
+              src={property.images[0]}
+              alt={property.title}
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-300"
+              onError={(e) => {
+                // Fallback si la imagen falla
+                e.currentTarget.src = 'https://placehold.co/400x300?text=Sin+Imagen'
+              }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+              <span>Sin imagen</span>
+            </div>
+          )}
           {/* Badges */}
           <div className="absolute top-4 left-4 flex gap-2">
             <span className="bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium">

@@ -43,9 +43,18 @@ export default function VenderPage() {
         body: JSON.stringify(formValues),
       })
 
-      const result = await response.json()
+      // Verificar si la respuesta es JSON válido
+      let result
+      try {
+        result = await response.json()
+      } catch (jsonError) {
+        console.error('Error al parsear respuesta JSON:', jsonError)
+        setError('Error al procesar la respuesta del servidor. Por favor, intenta de nuevo.')
+        setLoading(false)
+        return
+      }
 
-      if (!result.success) {
+      if (!response.ok || !result.success) {
         setError(result.error || 'Error al guardar los datos. Por favor, intenta de nuevo.')
         setLoading(false)
         return
